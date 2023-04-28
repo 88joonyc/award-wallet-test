@@ -1,24 +1,67 @@
-import react, { useState } from 'react';
+import react, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function AwardLogin() {
     
     const location = useLocation();
+    const meta = location.state;
 
     const [ login, setLogin ] = useState('');
-    const [ passwrod, setPassword ] = useState('');
+    const [ password, setPassword ] = useState('');
+    const [ requestId, setrequestId ] = useState('');
 
 
-    const callCode = async (code) => {
-        const res = await fetch(`http://localhost:5213/api/${code}`);
+    const callCode = async () => {
+        const res = await fetch(`http://localhost:5213/api/${location.state.code}`);
         const body = await res.json();
-        console.log(body);
-    }
+    };
 
-    const handleSubmit = function(e) {
+    useEffect(() => {
+        callCode()
+    }, []);
+
+    const handleSubmit = async function (e) {
         e.preventDefault();
+        try {
+            const data = await fetch(`http://localhost:5213/api/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    provider: meta.code,
+                    // program: meta.programName,
+                    login,
+                    password
+                })
+            })
+
+            const body = await data.json();
+            setrequestId(body.package[0].requestId); 
         
-    }
+            setTimeout(() => {
+                handleLogin(requestId)
+                console.log('now singing in and cghaign page', requestId)
+            }, 4000)
+
+        } catch (err) {
+            console.log(err)
+        }
+        
+    };
+
+    const handleLogin = async function(id) {
+        try {
+            const data = await fetch (`http://localhost:5213/api/login/${id}`)
+            const body = await data.json();
+
+            console.log(body)
+        } catch (err) {
+            console.log(err)
+        }
+    };
+
+    console.log(location)
 
     return (
         <div className='h-[100vh]'>
@@ -39,4 +82,4 @@ export default function AwardLogin() {
             </div>
         </div>
     )
-}
+};

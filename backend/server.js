@@ -28,19 +28,47 @@ app.get('/api/:code', (req, res) => (
     fetch(`${process.env.APIENDPOINT}providers/${req.params.code}`, headerOptions)
     .then( res => res.json())
     .then( json => res.send(json))
-    .catch(conosle.log(err))
+    .catch(console.log(err))
 ));
 
-pp.post('/api/login', (req, res) => {
-    jsonParser, {
+app.post('/api/login', jsonParser, (req, res) => {
+
+    const {
+        provider,
+        // program, 
+        login,
+        password
+    } = req.body;
+    
+    fetch(`${process.env.APIENDPOINT}account/check/package`, {
         method: 'POST',
         headers: {
             'X-Authentication': process.env.AUTHENTICATION
         },
-        body: {}
-    } 
+        body: JSON.stringify({
+            "package": [
+              {
+                "provider": provider,
+                "login": login,
+                "login2": 'program',
+                "password": password,
+                "userId": "1",
+                "priority": 9
+              }
+            ]
+          })
+    })
+    .then(response => response.json())
+    .then(data => res.send(data))
+    .catch(err => console.log(err)) 
+});
 
-})
+app.get('/api/login/:id', (req, res) => {
+    fetch(`${process.env.APIENDPOINT}account/check/${req.params.id}`, headerOptions)
+    .then(response => response.json())
+    .then(data => res.send(data))
+    .catch(err => console.log(err))
+});
 
 
 app.listen(PORT, () => {
