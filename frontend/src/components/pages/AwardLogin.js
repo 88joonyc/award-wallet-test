@@ -59,7 +59,7 @@ export default function AwardLogin() {
     
                     if (!reqId ) clearInterval(timer);
     
-                }, 10000) 
+                }, 5000) 
             }
         }).catch(err => console.log(err))
     }
