@@ -24,13 +24,15 @@ app.get('/api', (req,res) => {
     .catch(err => console.log(err))
 });
 
-app.get('/api/:code', (req, res) => (
+// retrieves loyallty program data
+app.get('/api/program/:code', (req, res) => {
     fetch(`${process.env.APIENDPOINT}providers/${req.params.code}`, headerOptions)
     .then( res => res.json())
     .then( json => res.send(json))
-    .catch(console.log(err))
-));
+    .catch(err => console.log(err))
+});
 
+// retireves login request ID
 app.post('/api/login', jsonParser, (req, res) => {
 
     const {
@@ -63,6 +65,7 @@ app.post('/api/login', jsonParser, (req, res) => {
     .catch(err => console.log(err)) 
 });
 
+// retrieves loyalty account info
 app.get('/api/login/:id', (req, res) => {
     fetch(`${process.env.APIENDPOINT}account/check/${req.params.id}`, headerOptions)
     .then(response => response.json())
